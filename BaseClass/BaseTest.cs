@@ -8,15 +8,17 @@ using AventStack.ExtentReports.Reporter;
 using AventStack.ExtentReports.Reporter.Configuration;
 using NUnit.Framework.Interfaces;
 using Microsoft.Extensions.Configuration;
+using System.Net;
+using System.Net.Mail;
 
 namespace SeleniumCsharp.BaseClass
 {
-    
-    public  class BaseTest
+
+    public class BaseTest
     {
-        
+
         public IWebDriver driver;
-        public  ExtentReports extent = null;
+        public ExtentReports extent = null;
         public ExtentTest test;
         public IConfiguration configuration;
         public static IConfiguration InitConfiguration()
@@ -79,9 +81,9 @@ namespace SeleniumCsharp.BaseClass
                 string screenShotPath = GetScreenShot.Capture(driver, "screenShotName");
                 test.Log(Status.Fail, stackTrace + errorMessage);
                 test.Log(Status.Fail, "Snapshot below: " + test.AddScreenCaptureFromPath(screenShotPath));
-               
+
             }
-            
+
         }
         public class GetScreenShot
         {
@@ -90,8 +92,8 @@ namespace SeleniumCsharp.BaseClass
                 ITakesScreenshot ts = (ITakesScreenshot)driver;
                 Screenshot screenshot = ts.GetScreenshot();
                 string pth = System.Reflection.Assembly.GetCallingAssembly().CodeBase;
-               string finalpth = pth.Substring(0, pth.LastIndexOf("bin")) + "ErrorScreenshots\\" + screenShotName + ".png";
-               string localpath = new Uri(finalpth).LocalPath;
+                string finalpth = pth.Substring(0, pth.LastIndexOf("bin")) + "ErrorScreenshots\\" + screenShotName + ".png";
+                string localpath = new Uri(finalpth).LocalPath;
                 screenshot.SaveAsFile("D:\\Git\\SeleniumCsharp\\Screenshots\\Screenshot" + DateTime.Now.Second + ".png", ScreenshotImageFormat.Png);
                 return localpath;
             }
@@ -102,7 +104,27 @@ namespace SeleniumCsharp.BaseClass
         {
             driver.Quit();
             extent.Flush();
-        }
+            MailMessage mail = new MailMessage();
+            SmtpClient SmtpServer = new SmtpClient("smtp.gmail.com");
+            mail.From = new MailAddress("phaneendraphani20@gmail.com");
+            mail.To.Add("phaneendraphani22@yahoo.in");
+            mail.Subject = "Automation Report";
+            mail.Body = "Hi," + "\n" + "Please, Find the Automation test Report " + "\n"
+                    + "\n" + "Note : This is an automatic generated mail by Automation Script" + "\n" + "\n" + "\n"
+                    + "\n" + "Thank you," + "\n" + "Phanindraa";
 
+            System.Net.Mail.Attachment attachment;
+            attachment = new System.Net.Mail.Attachment("D:\\Git\\SeleniumCsharp\\HtmlReports\\index.html");
+            mail.Attachments.Add(attachment);
+
+
+            SmtpServer.Port = 587;
+            SmtpServer.Credentials = new System.Net.NetworkCredential("phaneendraphani20@gmail.com", "Phanindraa@15");
+            SmtpServer.EnableSsl = true;
+
+            SmtpServer.Send(mail);
+
+        }
+     
     }
 }

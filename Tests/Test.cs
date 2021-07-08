@@ -53,7 +53,7 @@ namespace SeleniumCsharp
             {
              //   UITest(() =>
              //   {
-             //       Assert.Ignore("Defect ID: 1235");
+                //    Assert.Ignore("Defect ID: 1235");
                     test = extent.CreateTest("noCredentials");
                     IWebElement userNameTextField = driver.FindElement(By.Id("emailInput"));
                     userNameTextField.Clear();
@@ -80,7 +80,7 @@ namespace SeleniumCsharp
             {
              //   UITest(() =>
              //   {
-                  //  Assert.Ignore("Defect ID: 1236");
+                //    Assert.Ignore("Defect ID: 1236");
                     test = extent.CreateTest("InvalidCredentials");
                     IWebElement userNameTextField = driver.FindElement(By.Id("emailInput"));
                     userNameTextField.Clear();
@@ -128,7 +128,7 @@ namespace SeleniumCsharp
             {
               //  UITest(() =>
              //   {
-              //      Assert.Ignore("Defect ID: 1237");
+                  //  Assert.Ignore("Defect ID: 1237");
                     test = extent.CreateTest("validCredentials");
                     IWebElement userNameTextField = driver.FindElement(By.Id("emailInput"));
                     userNameTextField.Clear();
