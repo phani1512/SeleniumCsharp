@@ -38,7 +38,7 @@ namespace SeleniumCsharp.BaseClass
             Thread.Sleep(5000);
 
             extent = new ExtentReports();
-            var htmlReporter = new ExtentHtmlReporter(@"D:\Testing\SeleniumC#\SeleniumCsharp\HtmlReports\Reports" + ".html");
+            var htmlReporter = new ExtentHtmlReporter(@"D:\Git\SeleniumCsharp\HtmlReports\Report" + ".html");
             extent.AttachReporter(htmlReporter);
             //Add QA system info to html report
 
@@ -92,7 +92,7 @@ namespace SeleniumCsharp.BaseClass
                 string pth = System.Reflection.Assembly.GetCallingAssembly().CodeBase;
                string finalpth = pth.Substring(0, pth.LastIndexOf("bin")) + "ErrorScreenshots\\" + screenShotName + ".png";
                string localpath = new Uri(finalpth).LocalPath;
-                screenshot.SaveAsFile("D:\\Testing\\SeleniumC#\\SeleniumCsharp\\Screenshots\\Screenshot" + DateTime.Now.Second + ".png", ScreenshotImageFormat.Png);
+                screenshot.SaveAsFile("D:\\Git\\SeleniumCsharp\\Screenshots\\Screenshot" + DateTime.Now.Second + ".png", ScreenshotImageFormat.Png);
                 return localpath;
             }
         }
