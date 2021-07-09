@@ -10,6 +10,7 @@ using NUnit.Framework.Interfaces;
 using Microsoft.Extensions.Configuration;
 using System.Net;
 using System.Net.Mail;
+using System.IO;
 
 namespace SeleniumCsharp.BaseClass
 {
@@ -75,10 +76,10 @@ namespace SeleniumCsharp.BaseClass
             var status = TestContext.CurrentContext.Result.Outcome.Status;
             var stackTrace = "<pre>" + TestContext.CurrentContext.Result.StackTrace + "</pre>";
             var errorMessage = TestContext.CurrentContext.Result.Message;
-
+            var testCaseName = TestContext.CurrentContext.Test.Name;
             if (status == TestStatus.Failed)
             {
-                string screenShotPath = GetScreenShot.Capture(driver, "screenShotName");
+                string screenShotPath = GetScreenShot.Capture(driver, testCaseName);
                 test.Log(Status.Fail, stackTrace + errorMessage);
                 test.Log(Status.Fail, "Snapshot below: " + test.AddScreenCaptureFromPath(screenShotPath));
 
@@ -91,11 +92,13 @@ namespace SeleniumCsharp.BaseClass
             {
                 ITakesScreenshot ts = (ITakesScreenshot)driver;
                 Screenshot screenshot = ts.GetScreenshot();
-                string pth = System.Reflection.Assembly.GetCallingAssembly().CodeBase;
-                string finalpth = pth.Substring(0, pth.LastIndexOf("bin")) + "ErrorScreenshots\\" + screenShotName + ".png";
+                var asm  = System.Reflection.Assembly.GetCallingAssembly();
+                string pth = Path.GetDirectoryName(asm.Location);
+                pth = pth.Substring(0, pth.IndexOf('b') - 1);
+                string finalpth = pth.Substring(0, pth.LastIndexOf("SeleniumCsharp")) + "ErrorScreenshots\\" + screenShotName + ".png";
                 string localpath = new Uri(finalpth).LocalPath;
-                screenshot.SaveAsFile("D:\\Git\\SeleniumCsharp\\Screenshots\\Screenshot" + DateTime.Now.Second + ".png", ScreenshotImageFormat.Png);
-                return localpath;
+                screenshot.SaveAsFile(pth + "\\Screenshots\\" + screenShotName + ".png", ScreenshotImageFormat.Png);
+                return pth + "\\Screenshots\\" + screenShotName + ".png";
             }
         }
 
@@ -104,10 +107,19 @@ namespace SeleniumCsharp.BaseClass
         {
             driver.Quit();
             extent.Flush();
+            sendEmail();
+        }
+        public void sendEmail()
+        {
             MailMessage mail = new MailMessage();
             SmtpClient SmtpServer = new SmtpClient("smtp.gmail.com");
-            mail.From = new MailAddress("phaneendraphani20@gmail.com");
-            mail.To.Add("phaneendraphani22@yahoo.in");
+            mail.From = new MailAddress(configuration.GetSection("fromRecipient").Value);
+            var emails = configuration.GetSection("emailRecipients").Value.Split(',');
+            foreach (var email in emails)
+            {
+                mail.To.Add(email);
+            }
+
             mail.Subject = "Automation Report";
             mail.Body = "Hi," + "\n" + "Please, Find the Automation test Report " + "\n"
                     + "\n" + "Note : This is an automatic generated mail by Automation Script" + "\n" + "\n" + "\n"
@@ -116,12 +128,9 @@ namespace SeleniumCsharp.BaseClass
             System.Net.Mail.Attachment attachment;
             attachment = new System.Net.Mail.Attachment("D:\\Git\\SeleniumCsharp\\HtmlReports\\index.html");
             mail.Attachments.Add(attachment);
-
-
             SmtpServer.Port = 587;
             SmtpServer.Credentials = new System.Net.NetworkCredential("phaneendraphani20@gmail.com", "Phanindraa@15");
             SmtpServer.EnableSsl = true;
-
             SmtpServer.Send(mail);
 
         }
